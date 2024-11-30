@@ -1,0 +1,6 @@
+[workspace]
+    resolver = "2"
+    members  = ["util", "2024", "macros"]
+
+    [workspace.package]
+        edition = "2021"

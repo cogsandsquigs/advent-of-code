@@ -1,0 +1,9 @@
+[package]
+    name              = "util"
+    version           = "0.1.0"
+    edition.workspace = true
+
+[dependencies]
+    macros    = { path = "../macros" }
+    itertools = "^0.13.0"
+    anyhow    = "^1.0.9"

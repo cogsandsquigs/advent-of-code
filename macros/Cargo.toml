@@ -1,0 +1,15 @@
+[package]
+    name              = "macros"
+    version           = "0.1.0"
+    edition.workspace = true
+
+[dependencies]
+    quote = "^1.0.37"
+    syn = { version = "^2.0.90", features = [
+        "parsing",
+        "extra-traits",
+        "full",
+    ] }
+
+[lib]
+    crate_type = ["proc-macro"]
