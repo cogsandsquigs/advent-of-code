@@ -45,7 +45,7 @@ pub fn solution(args: TokenStream, item: TokenStream) -> TokenStream {
 
     quote! {
         pub fn #fn_name() -> String {
-            use util::files::read;
+            use utils::files::read;
 
             let year: usize = env!("CARGO_PKG_NAME")
                 .split('-')

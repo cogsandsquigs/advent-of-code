@@ -1,4 +1,4 @@
-use util::macros::solution;
+use utils::macros::solution;
 
 #[solution(day = 1, part = 1)]
 pub fn part_1(input: &str) -> usize {
