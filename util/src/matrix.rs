@@ -18,7 +18,7 @@ where
     T: Clone,
 {
     /// Matrix from 2d vector.
-    /// NOTE: They way this works, from a list like:
+    /// They way this works, from a list like:
     /// [
     ///     [1, 2, ...],
     ///     [3, 4, ...],
@@ -27,6 +27,7 @@ where
     /// You get the matrix:
     ///     [1, 2, ...]
     ///     [3, 4, ...]
+    ///     [   ...   ]
     pub fn from_2d_vec(v: Vec<Vec<T>>) -> Matrix<T> {
         debug_assert!(!v.is_empty()); // TEST: Need actual values.
         debug_assert!(v.iter().all(|x| !x.is_empty())); // TEST: Need actual values
@@ -44,12 +45,9 @@ where
     pub fn transpose(&self) -> Matrix<T> {
         let mut vals = vec![vec![]; self.width];
 
-        for x in 0..self.width {
-            for y in 0..self.height {
-                let v = self.get(x, y);
-                vals[x].push(v.clone());
-            }
-        }
+        (0..self.width)
+            .cartesian_product(0..self.height)
+            .for_each(|(x, y)| vals[x].push(self.get(x, y).clone()));
 
         Matrix::from_2d_vec(vals)
     }
@@ -85,12 +83,9 @@ impl<T> Matrix<T> {
     pub fn columns(&self) -> Vec<Vec<&T>> {
         let mut vals = vec![vec![]; self.width];
 
-        for x in 0..self.width {
-            for y in 0..self.height {
-                let v = self.get(x, y);
-                vals[x].push(v);
-            }
-        }
+        (0..self.width)
+            .cartesian_product(0..self.height)
+            .for_each(|(x, y)| vals[x].push(self.get(x, y)));
 
         vals
     }
