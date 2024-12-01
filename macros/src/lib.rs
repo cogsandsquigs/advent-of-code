@@ -55,6 +55,8 @@ pub fn solution(args: TokenStream, item: TokenStream) -> TokenStream {
                 .expect("Format of the year folder should be 'aoc-YYYY'");
             let input = read(&format!("{}/input/day-{:0>2}/input{}.txt", year, #day, if is_test { ".test" } else { "" }))
                 .or_else(|_| read(&format!("{}/input/day-{}/input{}.txt", year, #day, if is_test { ".test" } else { "" })))
+                .or_else(|_| read(&format!("aoc-{}/input/day-{}/input{}.txt", year, #day, if is_test { ".test" } else { "" })))
+                .or_else(|_| read(&format!("aoc-{}/input/day-{}/input{}.txt", year, #day, if is_test { ".test" } else { "" })))
                 .unwrap();
 
             let start = std::time::Instant::now();
