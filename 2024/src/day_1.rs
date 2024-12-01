@@ -1,5 +1,3 @@
-use std::collections::{HashMap, HashSet};
-
 use utils::{itertools::Itertools, macros::solution};
 
 #[solution(day = 1, part = 1)]
@@ -19,7 +17,7 @@ pub fn part_1(input: &str) -> usize {
 
 #[solution(day = 1, part = 2)]
 pub fn part_2(input: &str) -> usize {
-    let (mut left, mut right): (Vec<_>, Vec<_>) = input
+    let (left, right): (Vec<_>, Vec<_>) = input
         .lines()
         .map(|x| x.split_whitespace())
         .map(|mut x| (x.next().unwrap(), x.next().unwrap()))
