@@ -1,12 +1,12 @@
-use std::{collections::HashMap, sync::LazyLock};
+use std::collections::HashMap;
+use utils::{anyhow::Result, runner};
 
 mod day_1;
 mod day_2;
 
-static SOLUTIONS: LazyLock<HashMap<usize, fn() -> ()>> =
-    LazyLock::new(|| HashMap::from([(1, day_1::run as fn()), (2, day_2::run as fn())]));
-
-// TODO: add CLI for selecting days
-fn main() {
-    day_2::run();
+fn main() -> Result<()> {
+    runner::run(HashMap::from([
+        (1, (day_1::part_1 as fn(bool), day_1::part_2 as fn(bool))),
+        (2, (day_2::part_1 as fn(bool), day_2::part_2 as fn(bool))),
+    ]))
 }

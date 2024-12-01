@@ -1,13 +1,17 @@
 use utils::{itertools::Itertools, macros::solution};
 
-#[solution(day = 1, part = 1)]
-pub fn part_1(input: &str) -> usize {
-    let (mut left, mut right): (Vec<_>, Vec<_>) = input
+fn parse(input: &str) -> (Vec<usize>, Vec<usize>) {
+    input
         .lines()
         .map(|x| x.split_whitespace())
         .map(|mut x| (x.next().unwrap(), x.next().unwrap()))
         .map(|(a, b)| (a.parse::<usize>().unwrap(), b.parse::<usize>().unwrap()))
-        .unzip();
+        .unzip()
+}
+
+#[solution(day = 1, part = 1)]
+pub fn part_1(input: &str) -> usize {
+    let (mut left, mut right) = parse(input);
 
     left.sort();
     right.sort();
@@ -17,21 +21,11 @@ pub fn part_1(input: &str) -> usize {
 
 #[solution(day = 1, part = 2)]
 pub fn part_2(input: &str) -> usize {
-    let (left, right): (Vec<_>, Vec<_>) = input
-        .lines()
-        .map(|x| x.split_whitespace())
-        .map(|mut x| (x.next().unwrap(), x.next().unwrap()))
-        .map(|(a, b)| (a.parse::<usize>().unwrap(), b.parse::<usize>().unwrap()))
-        .unzip();
+    let (left, right) = parse(input);
 
     let right_set = right.iter().counts_by(|x| x);
 
     left.iter()
         .map(|x| x * right_set.get(x).unwrap_or(&0))
         .sum()
-}
-
-pub fn run() {
-    part_1();
-    part_2();
 }

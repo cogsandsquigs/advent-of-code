@@ -44,7 +44,7 @@ pub fn solution(args: TokenStream, item: TokenStream) -> TokenStream {
     let inner_fn_return = input.sig.output;
 
     quote! {
-        pub fn #fn_name() -> String {
+        pub fn #fn_name(is_test: bool) {
             use utils::files::read;
 
             let year: usize = env!("CARGO_PKG_NAME")
@@ -53,7 +53,6 @@ pub fn solution(args: TokenStream, item: TokenStream) -> TokenStream {
                 .expect("Format of the year folder should be 'aoc-YYYY'")
                 .parse()
                 .expect("Format of the year folder should be 'aoc-YYYY'");
-            let is_test = std::env::args().nth(1) == Some("test".to_string());
             let input = read(&format!("{}/input/day-{:0>2}/input{}.txt", year, #day, if is_test { ".test" } else { "" }))
                 .or_else(|_| read(&format!("{}/input/day-{}/input{}.txt", year, #day, if is_test { ".test" } else { "" })))
                 .unwrap();
@@ -71,7 +70,7 @@ pub fn solution(args: TokenStream, item: TokenStream) -> TokenStream {
                 elapsed.as_nanos() % 1000, // get only the last 3 digits, which are the nanoseconds
             );
 
-            result.to_string()
+            // result.to_string()
         }
 
         fn #inner_fn_name(#fn_args) #inner_fn_return {
