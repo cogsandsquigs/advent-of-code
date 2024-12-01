@@ -5,7 +5,7 @@
     edition.workspace = true
 
 [dependencies]
-    macros     = { path = "../macros" }
-    itertools  = "^0.13.0"
-    anyhow     = "^1.0.9"
-    num-traits = "^0.2.19"
+    macros    = { path = "../macros" }
+    itertools = "^0.13.0"
+    anyhow    = "^1.0.9"
+    num       = "^0.4.3"
