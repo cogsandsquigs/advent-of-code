@@ -35,7 +35,7 @@ pub fn run(solved: SolvedDays) -> Result<()> {
         ));
     }
     // Make sure that we only select valid parts.
-    else if cli.parts.iter().any(|&p| p != 1 || p != 2) {
+    else if cli.parts.iter().any(|&p| p != 1 && p != 2) {
         return Err(anyhow!(
             "There is only a part 1 and part 2, not any other parts!"
         ));
