@@ -6,8 +6,9 @@ use std::collections::HashMap;
 #[derive(Parser)]
 #[command()]
 pub struct Cli {
-    /// The day we are running.
-    day: usize,
+    /// The day we are running. Defaults to the last day solved.
+    #[arg(short, long)]
+    day: Option<usize>,
 
     /// Any parts we are running, if we choose to specify.
     #[arg(short, long, default_values_t = [1, 2])]
@@ -25,7 +26,14 @@ pub fn run(solved: SolvedDays) -> Result<()> {
     let cli = Cli::parse();
 
     let (part_1, part_2) = solved
-        .get(&cli.day)
+        .get(
+            &cli.day.unwrap_or(
+                *solved
+                    .keys()
+                    .max()
+                    .context("There should be at least one day solved!")?,
+            ),
+        )
         .context("Expected a day that was solved!")?;
 
     // Make sure there are at most 2 parts selected.

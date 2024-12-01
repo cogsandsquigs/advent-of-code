@@ -1,7 +1,7 @@
 [workspace]
     resolver        = "2"
-    members         = ["utils", "2024", "macros"]
-    default_members = ["2024"]
+    members         = ["utils", "aoc-2024", "macros"]
+    default_members = ["aoc-2024"]
 
     [workspace.package]
         edition = "2021"
