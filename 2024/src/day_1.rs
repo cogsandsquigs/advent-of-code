@@ -9,3 +9,8 @@ pub fn part_1(input: &str) -> usize {
 pub fn part_2(input: &str) -> usize {
     todo!()
 }
+
+pub fn run() {
+    part_1();
+    part_2();
+}
