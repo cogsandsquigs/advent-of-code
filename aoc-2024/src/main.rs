@@ -1,8 +1,8 @@
-use std::collections::HashMap;
-use utils::{anyhow::Result, runner};
-
 mod day_1;
 mod day_2;
+
+use std::collections::HashMap;
+use utils::{anyhow::Result, runner};
 
 fn main() -> Result<()> {
     runner::run(HashMap::from([

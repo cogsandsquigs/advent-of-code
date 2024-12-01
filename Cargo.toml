@@ -1,6 +1,6 @@
 [workspace]
     resolver        = "2"
-    members         = ["utils", "aoc-2024", "macros"]
+    members         = ["aoc-2024", "aoc-2021", "utils", "macros"]
     default_members = ["aoc-2024"]
 
     [workspace.package]
