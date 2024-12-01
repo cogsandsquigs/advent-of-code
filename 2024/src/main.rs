@@ -3,5 +3,5 @@ mod day_2;
 
 // TODO: add CLI for selecting days
 fn main() {
-    day_1::run();
+    day_2::run();
 }
