@@ -1,5 +1,7 @@
 use core::fmt::{Display, Formatter};
-use num::{Float, Num, Signed};
+use itertools::Itertools;
+use num::{traits::SaturatingSub, Float, Num, Signed};
+use std::hash::Hash;
 
 /// A point in a 2D grid.
 /// TODO: Change points to be T instead of usize.
@@ -15,7 +17,7 @@ where
 /// Public API for Point.
 impl<T> Point<T>
 where
-    T: Num,
+    T: Num + SaturatingSub + Hash + Eq,
 {
     /// Returns a new `Point`.
     pub fn new(x: T, y: T) -> Self {
@@ -28,16 +30,24 @@ where
     where
         T: Copy + From<usize>,
     {
-        vec![
-            Self::new(self.x - 1.into(), self.y),
+        [
+            Self::new(self.x.saturating_sub(&1.into()), self.y),
             Self::new(self.x + 1.into(), self.y),
-            Self::new(self.x, self.y - 1.into()),
+            Self::new(self.x, self.y.saturating_sub(&1.into())),
             Self::new(self.x, self.y + 1.into()),
-            Self::new(self.x - 1.into(), self.y - 1.into()),
-            Self::new(self.x + 1.into(), self.y - 1.into()),
-            Self::new(self.x - 1.into(), self.y + 1.into()),
+            Self::new(
+                self.x.saturating_sub(&1.into()),
+                self.y.saturating_sub(&1.into()),
+            ),
+            Self::new(self.x + 1.into(), self.y.saturating_sub(&1.into())),
+            Self::new(self.x.saturating_sub(&1.into()), self.y + 1.into()),
             Self::new(self.x + 1.into(), self.y + 1.into()),
         ]
+        .iter()
+        .unique()
+        .filter(|x| **x != *self)
+        .cloned()
+        .collect_vec()
     }
 
     /// Returns the set of all neighbors orthogonal to the given coordinates.
@@ -46,12 +56,17 @@ where
     where
         T: From<usize> + Copy,
     {
-        vec![
-            Self::new(self.x - 1.into(), self.y),
+        [
+            Self::new(self.x.saturating_sub(&1.into()), self.y),
             Self::new(self.x + 1.into(), self.y),
-            Self::new(self.x, self.y - 1.into()),
+            Self::new(self.x, self.y.saturating_sub(&1.into())),
             Self::new(self.x, self.y + 1.into()),
         ]
+        .iter()
+        .unique()
+        .filter(|x| **x != *self)
+        .cloned()
+        .collect_vec()
     }
 
     /// Returns the set of all neighbors diagonal to the given coordinates.
@@ -61,9 +76,12 @@ where
         T: From<usize> + Copy,
     {
         vec![
-            Self::new(self.x - 1.into(), self.y - 1.into()),
-            Self::new(self.x + 1.into(), self.y - 1.into()),
-            Self::new(self.x - 1.into(), self.y + 1.into()),
+            Self::new(
+                self.x.saturating_sub(&1.into()),
+                self.y.saturating_sub(&1.into()),
+            ),
+            Self::new(self.x + 1.into(), self.y.saturating_sub(&1.into())),
+            Self::new(self.x.saturating_sub(&1.into()), self.y + 1.into()),
             Self::new(self.x + 1.into(), self.y + 1.into()),
         ]
     }

@@ -1,78 +1,109 @@
-use std::{cell::RefCell, rc::Rc};
-use utils::macros::solution;
+use std::collections::HashSet;
+use utils::{itertools::Itertools, macros::solution, parse::Parseable, point::Point};
 
 #[solution(day = 11, part = 1)]
 fn part_2(input: &str) -> usize {
-    todo!()
+    let mut matrix = input
+        .to_matrix_chars(|c| c.to_string().parse::<usize>())
+        .unwrap();
+
+    let mut step = 0;
+
+    loop {
+        step += 1;
+
+        matrix = matrix.map(|x| x + 1);
+
+        let mut did_flash: HashSet<Point<usize>> = HashSet::new();
+
+        loop {
+            let tmp = matrix.clone();
+            let vs = tmp
+                .into_iter()
+                .filter(|(_, &x)| x > 9)
+                .filter(|(p, _)| !did_flash.contains(p))
+                .collect_vec();
+
+            // Break if we finish the flashing
+            if vs.is_empty() {
+                break;
+            }
+
+            vs.iter().for_each(|(p, _)| {
+                did_flash.insert(*p);
+            });
+
+            let ns = vs
+                .iter()
+                .map(|(p, _)| p)
+                .flat_map(|p| p.neighbors())
+                .filter(|p| p.x < matrix.width() && p.y < matrix.height())
+                .collect_vec(); // NOTE: Gotta collect it all here 2 avoid referencing issues
+
+            for n in ns {
+                matrix.set(n, matrix.get(n) + 1);
+            }
+        }
+
+        for p in did_flash {
+            matrix.set(p, 0);
+        }
+
+        if matrix.all(|x| *x == 0) {
+            break;
+        }
+    }
+
+    step
 }
 
 #[solution(day = 11, part = 1)]
 fn part_1(input: &str) -> usize {
-    let octopi: Vec<Vec<u32>> = input
-        .lines()
-        .map(|line| line.chars().map(|c| c.to_digit(10).unwrap()).collect())
-        .collect();
+    let mut matrix = input
+        .to_matrix_chars(|c| c.to_string().parse::<usize>())
+        .unwrap();
 
-    println!("{:?}", octopi);
+    let mut flashes = 0;
 
-    todo!();
-}
+    for _ in 0..100 {
+        matrix = matrix.map(|x| x + 1);
 
-fn convolve(
-    matrix: &Vec<Vec<Rc<RefCell<u32>>>>,
-    mut kernel: impl FnMut(&Vec<Vec<Rc<RefCell<u32>>>>, (usize, usize), Vec<(usize, usize)>),
-) {
-    for y in 0..matrix.len() {
-        for x in 0..matrix[0].len() {
-            convolve_at(matrix, &mut kernel, (x, y))
-        }
-    }
-}
+        let mut did_flash: HashSet<Point<usize>> = HashSet::new();
 
-fn convolve_at(
-    matrix: &Vec<Vec<Rc<RefCell<u32>>>>,
-    kernel: &mut impl FnMut(&Vec<Vec<Rc<RefCell<u32>>>>, (usize, usize), Vec<(usize, usize)>),
-    point: (usize, usize),
-) {
-    let neighbors = neighbors(&matrix, point);
+        loop {
+            let tmp = matrix.clone();
+            let vs = tmp
+                .into_iter()
+                .filter(|(_, &x)| x > 9)
+                .filter(|(p, _)| !did_flash.contains(p))
+                .collect_vec();
 
-    kernel(matrix, point, neighbors);
-}
+            // Break if we finish the flashing
+            if vs.is_empty() {
+                break;
+            }
 
-fn neighbors<T>(matrix: &Vec<Vec<T>>, point: (usize, usize)) -> Vec<(usize, usize)> {
-    let (x, y) = point;
-    let height = matrix.len() - 1;
-    let width = matrix[0].len() - 1;
-    let mut neighbors: Vec<(usize, usize)> = vec![];
+            flashes += vs.len();
+            vs.iter().for_each(|(p, _)| {
+                did_flash.insert(*p);
+            });
 
-    if x > 0 {
-        if y > 0 {
-            neighbors.push((x - 1, y - 1));
-        }
+            let ns = vs
+                .iter()
+                .map(|(p, _)| p)
+                .flat_map(|p| p.neighbors())
+                .filter(|p| p.x < matrix.width() && p.y < matrix.height())
+                .collect_vec(); // NOTE: Gotta collect it all here 2 avoid referencing issues
 
-        if y < height {
-            neighbors.push((x - 1, y + 1));
+            for n in ns {
+                matrix.set(n, matrix.get(n) + 1);
+            }
         }
 
-        neighbors.push((x - 1, y));
-    }
-    if y > 0 {
-        if x < width {
-            neighbors.push((x + 1, y - 1));
+        for p in did_flash {
+            matrix.set(p, 0);
         }
-
-        neighbors.push((x, y - 1));
-    }
-    if x < width {
-        if y < height {
-            neighbors.push((x + 1, y + 1));
-        }
-
-        neighbors.push((x + 1, y));
-    }
-    if y < height {
-        neighbors.push((x, y + 1));
     }
 
-    neighbors
+    flashes
 }

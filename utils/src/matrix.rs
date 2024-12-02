@@ -1,3 +1,5 @@
+use crate::point::Point;
+use core::fmt;
 use itertools::Itertools;
 
 /// The matrix structure. Matrices are arranged in this way:
@@ -47,7 +49,7 @@ where
 
         (0..self.width)
             .cartesian_product(0..self.height)
-            .for_each(|(x, y)| vals[x].push(self.get(x, y).clone()));
+            .for_each(|(x, y)| vals[x].push(self.get((x, y).into()).clone()));
 
         Matrix::from_2d_vec(vals)
     }
@@ -65,8 +67,18 @@ impl<T> Matrix<T> {
     }
 
     /// Gets a value from the matrix.
-    pub fn get(&self, x: usize, y: usize) -> &T {
-        &self.vals[x + y * self.width]
+    pub fn get(&self, p: Point<usize>) -> &T {
+        &self.vals[p.x + p.y * self.width]
+    }
+
+    /// Gets a mutable value from the matrix.
+    pub fn get_mut(&mut self, p: Point<usize>) -> &mut T {
+        &mut self.vals[p.x + p.y * self.width]
+    }
+
+    /// Sets a value in the matrix.
+    pub fn set(&mut self, p: Point<usize>, v: T) {
+        self.vals[p.x + p.y * self.width] = v;
     }
 
     /// Gets the rows from the matrix.
@@ -85,9 +97,50 @@ impl<T> Matrix<T> {
 
         (0..self.width)
             .cartesian_product(0..self.height)
-            .for_each(|(x, y)| vals[x].push(self.get(x, y)));
+            .for_each(|(x, y)| vals[x].push(self.get((x, y).into())));
 
         vals
+    }
+
+    /// Applies a function to the matrix, over every entry.
+    pub fn map<U>(self, f: impl FnMut(&T) -> U) -> Matrix<U> {
+        Matrix {
+            width: self.width,
+            height: self.height,
+            vals: self.vals.iter().map(f).collect::<Vec<_>>(),
+        }
+    }
+
+    pub fn all(&self, f: impl FnMut(&T) -> bool) -> bool {
+        self.vals.iter().all(f)
+    }
+
+    pub fn any(&self, f: impl FnMut(&T) -> bool) -> bool {
+        self.vals.iter().any(f)
+    }
+}
+
+impl<T: Clone> Clone for Matrix<T> {
+    fn clone(&self) -> Self {
+        Self {
+            width: self.width,
+            height: self.height,
+            vals: self.vals.clone(),
+        }
+    }
+}
+
+impl<'a, T: 'a> IntoIterator for &'a Matrix<T> {
+    type Item = (Point<usize>, &'a T);
+    type IntoIter = <Vec<Self::Item> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.vals
+            .iter()
+            .enumerate()
+            .map(|(i, x)| (Point::new(i % self.width, i / self.height), x))
+            .collect_vec()
+            .into_iter()
     }
 }
 
@@ -99,6 +152,22 @@ where
 {
     fn eq(&self, other: &Self) -> bool {
         self.vals == other.vals
+    }
+}
+
+impl<T> fmt::Display for Matrix<T>
+where
+    T: fmt::Display,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.rows()
+                .iter()
+                .map(|r| r.iter().map(|v| v.to_string()).join(" "))
+                .join("\n")
+        )
     }
 }
 
