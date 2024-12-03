@@ -6,8 +6,11 @@ fn part_1(input: &str) -> usize {
 
     r.find_iter(input)
         .map(|m| &m.as_str()[4..m.len() - 1])
-        .map(|s| s.split(','))
-        .map(|i| i.map(|v| v.parse::<usize>().unwrap()).product::<usize>())
+        .map(|s| {
+            s.split(',')
+                .map(|v| v.parse::<usize>().unwrap())
+                .product::<usize>()
+        })
         .sum()
 }
 
