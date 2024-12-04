@@ -1,7 +1,10 @@
 use core::fmt::{Display, Formatter};
 use itertools::Itertools;
 use num::{traits::SaturatingSub, Float, Num, Signed};
-use std::hash::Hash;
+use std::{
+    hash::Hash,
+    ops::{Add, AddAssign, Sub, SubAssign},
+};
 
 /// A point in a 2D grid.
 /// TODO: Change points to be T instead of usize.
@@ -14,16 +17,21 @@ where
     pub y: T,
 }
 
-/// Public API for Point.
 impl<T> Point<T>
 where
-    T: Num + SaturatingSub + Hash + Eq,
+    T: Num,
 {
     /// Returns a new `Point`.
     pub fn new(x: T, y: T) -> Self {
         Self { x, y }
     }
+}
 
+/// Public API for Point.
+impl<T> Point<T>
+where
+    T: Num + SaturatingSub + Hash + Eq,
+{
     /// Returns the set of all neighbors of the given coordinates. The neighbors are returned in the
     /// order of left, right, up, down, top-left, top-right, bottom-left, bottom-right.
     pub fn neighbors(&self) -> Vec<Self>
@@ -104,6 +112,46 @@ where
     /// Computes the Manhattan distance between two points.
     pub fn euclidean_distance(&self, other: &Self) -> T {
         ((self.x - other.x).powi(2) + (self.y - other.y).powi(2)).sqrt()
+    }
+}
+
+impl<T> Add for Point<T>
+where
+    T: Num + Add,
+{
+    type Output = Point<T>;
+    fn add(self, rhs: Self) -> Self::Output {
+        Point::new(self.x + rhs.x, self.y + rhs.y)
+    }
+}
+
+impl<T> AddAssign for Point<T>
+where
+    T: Num + AddAssign,
+{
+    fn add_assign(&mut self, rhs: Self) {
+        self.x += rhs.x;
+        self.y += rhs.y;
+    }
+}
+
+impl<T> Sub for Point<T>
+where
+    T: Num + Sub,
+{
+    type Output = Point<T>;
+    fn sub(self, rhs: Self) -> Self::Output {
+        Point::new(self.x - rhs.x, self.y - rhs.y)
+    }
+}
+
+impl<T> SubAssign for Point<T>
+where
+    T: Num + SubAssign,
+{
+    fn sub_assign(&mut self, rhs: Self) {
+        self.x -= rhs.x;
+        self.y -= rhs.y;
     }
 }
 

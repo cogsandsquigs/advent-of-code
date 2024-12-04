@@ -1,6 +1,7 @@
 use crate::point::Point;
 use core::fmt;
 use itertools::Itertools;
+use std::iter::repeat_n;
 
 /// The matrix structure. Matrices are arranged in this way:
 ///     + x --->
@@ -56,6 +57,14 @@ where
 }
 
 impl<T> Matrix<T> {
+    pub fn from_vec(vals: Vec<T>, width: usize, height: usize) -> Matrix<T> {
+        Matrix {
+            width,
+            height,
+            vals,
+        }
+    }
+
     /// Gets the size of the rows.
     pub fn width(&self) -> usize {
         self.width
@@ -66,6 +75,10 @@ impl<T> Matrix<T> {
         self.height
     }
 
+    /// Gets all the values.
+    pub fn get_all(&self) -> &[T] {
+        self.vals.as_slice()
+    }
     /// Gets a value from the matrix.
     pub fn get(&self, p: Point<usize>) -> &T {
         &self.vals[p.x + p.y * self.width]
@@ -100,6 +113,93 @@ impl<T> Matrix<T> {
             .for_each(|(x, y)| vals[x].push(self.get((x, y).into())));
 
         vals
+    }
+
+    /// Gets the diagonals from top-left to bottom-right. This includes any and all diagonals which
+    /// do not start at the corners. i.e., it's any diagonal lines that can be made with the matrix.
+    /// NOTE: This only works on square matrices! Don't try it on rectangles!
+    pub fn square_diagonals_left_to_right(&self) -> Vec<Vec<&T>> {
+        let mut diagonals = vec![];
+        let max_size = self.width; // NOTE: Max length of diagonal equal to width or height of a
+                                   // square matrix.
+
+        for (size, p) in (1..=max_size).chain((1..max_size).rev()).zip(
+            repeat_n(0, self.width)
+                .chain(1..self.height)
+                .zip((1..self.width).rev().chain(repeat_n(0, self.height)))
+                .map(Point::from),
+        ) {
+            let mut d = vec![];
+
+            for x in 0..size {
+                let delta = Point::new(x, x);
+
+                d.push(self.get(p + delta));
+            }
+
+            diagonals.push(d);
+        }
+
+        diagonals
+    }
+
+    /// Gets the diagonals from top-right to bottom-left. This includes any and all diagonals which
+    /// do not start at the corners. i.e., it's any diagonal lines that can be made with the matrix.
+    /// NOTE: This only works on square matrices! Don't try it on rectangles!
+    pub fn square_diagonals_right_to_left(&self) -> Vec<Vec<&T>> {
+        let mut diagonals = vec![];
+        let max_size = self.width; // NOTE: Max length of diagonal equal to width or height of a
+                                   // square matrix.
+
+        for (size, p) in (1..=max_size).chain((1..max_size).rev()).zip(
+            (0..self.width - 1)
+                .chain(repeat_n(self.width - 1, self.height))
+                .zip(repeat_n(0, self.width).chain(1..self.height))
+                .map(Point::from),
+        ) {
+            let mut d = vec![];
+
+            for x in 0..size {
+                let delta = Point::new(x, x);
+
+                d.push(self.get(Point::new(p.x - delta.x, p.y + delta.y)));
+            }
+
+            diagonals.push(d);
+        }
+
+        diagonals
+    }
+
+    /// Counts the number of matching submatrices in the matrix.
+    pub fn count_submatrices(&self, submatrix: Matrix<T>) -> usize
+    where
+        T: Eq,
+    {
+        let mut total = 0;
+
+        for p in (0..=self.width - submatrix.width)
+            .cartesian_product(0..=self.height - submatrix.height)
+            .map(Point::from)
+        {
+            let mut did_match = true;
+
+            for delta in (0..submatrix.width)
+                .cartesian_product(0..submatrix.height)
+                .map(Point::from)
+            {
+                if self.get(p + delta) != submatrix.get(delta) {
+                    did_match = false;
+                    break;
+                }
+            }
+
+            if did_match {
+                total += 1;
+            }
+        }
+
+        total
     }
 
     /// Applies a function to the matrix, over every entry.
@@ -195,6 +295,21 @@ mod tests {
         let matrix = Matrix::from_2d_vec(vec![vec![1, 2], vec![3, 4]]);
 
         assert_eq!(matrix.columns(), vec![vec![&1, &3], vec![&2, &4]]);
+    }
+
+    #[test]
+    fn can_get_diagonals() {
+        let matrix = Matrix::from_2d_vec(vec![vec![1, 2], vec![3, 4]]);
+
+        assert_eq!(
+            matrix.square_diagonals_left_to_right(),
+            vec![vec![&3], vec![&1, &4], vec![&2]],
+        );
+
+        assert_eq!(
+            matrix.square_diagonals_right_to_left(),
+            vec![vec![&1], vec![&2, &3], vec![&4]]
+        );
     }
 
     #[test]
