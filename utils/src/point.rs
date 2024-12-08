@@ -3,7 +3,7 @@ use itertools::Itertools;
 use num::{traits::SaturatingSub, Float, Num, Signed};
 use std::{
     hash::Hash,
-    ops::{Add, AddAssign, Sub, SubAssign},
+    ops::{Add, AddAssign, Mul, Sub, SubAssign},
 };
 
 /// A point in a 2D grid.
@@ -155,6 +155,20 @@ where
     }
 }
 
+impl<T> Mul<T> for Point<T>
+where
+    T: Num + SubAssign + Clone,
+{
+    type Output = Point<T>;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Self {
+            x: self.x * rhs.clone(),
+            y: self.y * rhs,
+        }
+    }
+}
+
 impl<T> From<(T, T)> for Point<T>
 where
     T: Num,
@@ -170,6 +184,15 @@ where
 {
     fn from(point: Point<T>) -> Self {
         (point.x, point.y)
+    }
+}
+
+impl From<Point<usize>> for Point<isize> {
+    fn from(value: Point<usize>) -> Self {
+        Self {
+            x: value.x as isize,
+            y: value.y as isize,
+        }
     }
 }
 

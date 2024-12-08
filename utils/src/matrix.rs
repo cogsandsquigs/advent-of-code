@@ -1,7 +1,10 @@
 use crate::point::Point;
 use core::fmt;
 use itertools::Itertools;
-use std::iter::repeat_n;
+use std::{
+    iter::{repeat_n, Enumerate, Filter, Map},
+    slice,
+};
 
 /// The matrix structure. Matrices are arranged in this way:
 ///     + x --->
@@ -224,6 +227,16 @@ impl<T> Matrix<T> {
         let i = self.vals.iter().find_position(|t| f(*t))?.0;
 
         Some(Point::new(i % self.width, i / self.width))
+    }
+
+    /// Finds all items satisfying
+    pub fn find_all_index(&self, f: impl Fn(&T) -> bool) -> Vec<Point<usize>> {
+        self.vals
+            .iter()
+            .enumerate()
+            .filter(|(_, t)| f(*t))
+            .map(|(i, _)| Point::new(i % self.width, i / self.width))
+            .collect()
     }
 }
 

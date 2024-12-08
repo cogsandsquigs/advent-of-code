@@ -19,6 +19,6 @@ fn main() -> Result<()> {
         (5, (day_5::part_1 as fn(bool), day_5::part_2 as fn(bool))),
         (6, (day_6::part_1 as fn(bool), day_6::part_2 as fn(bool))),
         (7, (day_7::part_1 as fn(bool), day_7::part_2 as fn(bool))),
-        // (8, (day_8::part_1 as fn(bool), day_6::part_2 as fn(bool))),
+        (8, (day_8::part_1 as fn(bool), day_8::part_2 as fn(bool))),
     ]))
 }
