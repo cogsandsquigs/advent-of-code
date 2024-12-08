@@ -218,6 +218,13 @@ impl<T> Matrix<T> {
     pub fn any(&self, f: impl FnMut(&T) -> bool) -> bool {
         self.vals.iter().any(f)
     }
+
+    /// Finds first item satisfying
+    pub fn find_index(&self, f: impl Fn(&T) -> bool) -> Option<Point<usize>> {
+        let i = self.vals.iter().find_position(|t| f(*t))?.0;
+
+        Some(Point::new(i % self.width, i / self.width))
+    }
 }
 
 impl<T: Clone> Clone for Matrix<T> {
