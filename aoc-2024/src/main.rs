@@ -6,6 +6,7 @@ mod day_5;
 mod day_6;
 mod day_7;
 mod day_8;
+mod day_9;
 
 use std::collections::HashMap;
 use utils::{anyhow::Result, runner};
@@ -20,5 +21,6 @@ fn main() -> Result<()> {
         (6, (day_6::part_1 as fn(bool), day_6::part_2 as fn(bool))),
         (7, (day_7::part_1 as fn(bool), day_7::part_2 as fn(bool))),
         (8, (day_8::part_1 as fn(bool), day_8::part_2 as fn(bool))),
+        (9, (day_9::part_1 as fn(bool), day_9::part_2 as fn(bool))),
     ]))
 }
