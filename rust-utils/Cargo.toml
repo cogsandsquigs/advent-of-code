@@ -1,0 +1,13 @@
+[package]
+    authors = ["Ian Pratt <ianjdpratt@gmail.com>"]
+    edition = "2021"
+    name    = "utils"
+    version = "0.1.0"
+
+[dependencies]
+    anyhow    = "^1.0.9"
+    clap      = { version = "^4.5.21", features = ["derive"] }
+    itertools = "^0.13.0"
+    macros    = { path = "../rust-macros" }
+    num       = "^0.4.3"
+    regex     = "^1.11.1"

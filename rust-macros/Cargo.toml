@@ -1,8 +1,8 @@
 [package]
-    name              = "macros"
-    version           = "0.1.0"
-    edition.workspace = true
-    authors.workspace = true
+    authors = ["Ian Pratt <ianjdpratt@gmailcom>"]
+    edition = "2021"
+    name    = "macros"
+    version = "0.1.0"
 
 [dependencies]
     quote = "^1.0.37"
